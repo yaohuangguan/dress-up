@@ -1,0 +1,77 @@
+{
+  "VAEDecodeTiled": [
+    "samples",
+    "vae",
+    "tile_size",
+    "overlap",
+    "temporal_size",
+    "temporal_overlap"
+  ],
+  "ReferenceLatent": [
+    "conditioning"
+  ],
+  "CLIPTextEncode": [
+    "text",
+    "clip"
+  ],
+  "CFGGuider": [
+    "model",
+    "positive",
+    "negative",
+    "cfg"
+  ],
+  "Flux2Scheduler": [
+    "steps",
+    "width",
+    "height"
+  ],
+  "SaveImage": [
+    "images",
+    "filename_prefix"
+  ],
+  "CLIPLoader": [
+    "clip_name",
+    "type"
+  ],
+  "LoadImage": [
+    "image"
+  ],
+  "ConditioningZeroOut": [
+    "conditioning"
+  ],
+  "RandomNoise": [
+    "noise_seed"
+  ],
+  "VAEEncode": [
+    "pixels",
+    "vae"
+  ],
+  "VAELoader": [
+    "vae_name"
+  ],
+  "UNETLoader": [
+    "unet_name",
+    "weight_dtype"
+  ],
+  "KSamplerSelect": [
+    "sampler_name"
+  ],
+  "ImageScaleToTotalPixels": [
+    "image",
+    "upscale_method",
+    "megapixels",
+    "resolution_steps"
+  ],
+  "SamplerCustomAdvanced": [
+    "noise",
+    "guider",
+    "sampler",
+    "sigmas",
+    "latent_image"
+  ],
+  "EmptyFlux2LatentImage": [
+    "width",
+    "height",
+    "batch_size"
+  ]
+}

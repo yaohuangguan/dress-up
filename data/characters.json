@@ -1,0 +1,182 @@
+[
+  {
+    "id": "character-curated-01",
+    "code": "SELECT-01",
+    "kind": "character",
+    "name": "精选 01 · 长发微卷",
+    "category": "用户精选",
+    "tags": "用户提供 GPT AI 生成人物 长发微卷",
+    "prompt": "",
+    "path": "data/library/characters/curated-01.png",
+    "thumb": "data/library/characters/curated-01.png",
+    "source": "用户提供，声明为 GPT 生成人物；第 4 张图按四宫格原样拆分"
+  },
+  {
+    "id": "character-curated-02",
+    "code": "SELECT-02",
+    "kind": "character",
+    "name": "精选 02 · 卷发男士",
+    "category": "用户精选",
+    "tags": "用户提供 GPT AI 生成人物 卷发男士",
+    "prompt": "",
+    "path": "data/library/characters/curated-02.png",
+    "thumb": "data/library/characters/curated-02.png",
+    "source": "用户提供，声明为 GPT 生成人物；第 4 张图按四宫格原样拆分"
+  },
+  {
+    "id": "character-curated-03",
+    "code": "SELECT-03",
+    "kind": "character",
+    "name": "精选 03 · 浅棕长发",
+    "category": "用户精选",
+    "tags": "用户提供 GPT AI 生成人物 浅棕长发",
+    "prompt": "",
+    "path": "data/library/characters/curated-03.png",
+    "thumb": "data/library/characters/curated-03.png",
+    "source": "用户提供，声明为 GPT 生成人物；第 4 张图按四宫格原样拆分"
+  },
+  {
+    "id": "character-curated-04",
+    "code": "SELECT-04",
+    "kind": "character",
+    "name": "精选 04 · 空气刘海",
+    "category": "用户精选",
+    "tags": "用户提供 GPT AI 生成人物 空气刘海",
+    "prompt": "",
+    "path": "data/library/characters/curated-04.png",
+    "thumb": "data/library/characters/curated-04.png",
+    "source": "用户提供，声明为 GPT 生成人物；第 4 张图按四宫格原样拆分"
+  },
+  {
+    "id": "character-curated-05",
+    "code": "SELECT-05",
+    "kind": "character",
+    "name": "精选 05 · 中分直发",
+    "category": "用户精选",
+    "tags": "用户提供 GPT AI 生成人物 中分直发",
+    "prompt": "",
+    "path": "data/library/characters/curated-05.png",
+    "thumb": "data/library/characters/curated-05.png",
+    "source": "用户提供，声明为 GPT 生成人物；第 4 张图按四宫格原样拆分"
+  },
+  {
+    "id": "character-curated-06",
+    "code": "SELECT-06",
+    "kind": "character",
+    "name": "精选 06 · 侧分长卷",
+    "category": "用户精选",
+    "tags": "用户提供 GPT AI 生成人物 侧分长卷",
+    "prompt": "",
+    "path": "data/library/characters/curated-06.png",
+    "thumb": "data/library/characters/curated-06.png",
+    "source": "用户提供，声明为 GPT 生成人物；第 4 张图按四宫格原样拆分"
+  },
+  {
+    "id": "character-curated-07",
+    "code": "SELECT-07",
+    "kind": "character",
+    "name": "精选 07 · 轻盈刘海",
+    "category": "用户精选",
+    "tags": "用户提供 GPT AI 生成人物 轻盈刘海",
+    "prompt": "",
+    "path": "data/library/characters/curated-07.png",
+    "thumb": "data/library/characters/curated-07.png",
+    "source": "用户提供，声明为 GPT 生成人物；第 4 张图按四宫格原样拆分"
+  },
+  {
+    "id": "character-lin",
+    "code": "LIN",
+    "kind": "character",
+    "name": "林 · 自然清透",
+    "category": "女性 · 亚洲",
+    "tags": "内置 AI 生成人物 女性 · 亚洲",
+    "prompt": "",
+    "path": "data/library/characters/lin.png",
+    "thumb": "data/library/characters/lin.png",
+    "source": "本机 FLUX.2 Klein 4B AI 生成",
+    "generation": {
+      "seed": 93821,
+      "prompt": "Professional fashion model headshot portrait of one East Asian adult woman, age 27, beautiful, long straight dark hair, natural makeup, warm approachable expression. Front view, head and shoulders, looking into camera, wearing a plain white crew neck t-shirt, light warm gray studio background, soft daylight, photorealistic skin texture, natural proportions, premium editorial photography, centered face, no text, no logos."
+    }
+  },
+  {
+    "id": "character-chen",
+    "code": "CHEN",
+    "kind": "character",
+    "name": "辰 · 简约有型",
+    "category": "男性 · 亚洲",
+    "tags": "内置 AI 生成人物 男性 · 亚洲",
+    "prompt": "",
+    "path": "data/library/characters/chen.png",
+    "thumb": "data/library/characters/chen.png",
+    "source": "本机 FLUX.2 Klein 4B AI 生成",
+    "generation": {
+      "seed": 93822,
+      "prompt": "Professional fashion model headshot portrait of one East Asian adult man, age 29, handsome, short textured black hair, clean shaven, confident warm expression. Front view, head and shoulders, looking into camera, wearing a plain white crew neck t-shirt, light warm gray studio background, soft daylight, photorealistic skin texture, natural proportions, premium editorial photography, centered face, no text, no logos."
+    }
+  },
+  {
+    "id": "character-emma",
+    "code": "EMMA",
+    "kind": "character",
+    "name": "Emma · 法式随性",
+    "category": "女性 · 白人",
+    "tags": "内置 AI 生成人物 女性 · 白人",
+    "prompt": "",
+    "path": "data/library/characters/emma.png",
+    "thumb": "data/library/characters/emma.png",
+    "source": "本机 FLUX.2 Klein 4B AI 生成",
+    "generation": {
+      "seed": 93823,
+      "prompt": "Professional fashion model headshot portrait of one white European adult woman, age 28, beautiful, shoulder-length softly wavy brown hair, light freckles, natural makeup. Front view, head and shoulders, looking into camera, wearing a plain white crew neck t-shirt, light warm gray studio background, soft daylight, photorealistic skin texture, natural proportions, premium editorial photography, centered face, no text, no logos."
+    }
+  },
+  {
+    "id": "character-alex",
+    "code": "ALEX",
+    "kind": "character",
+    "name": "Alex · 都市日常",
+    "category": "男性 · 白人",
+    "tags": "内置 AI 生成人物 男性 · 白人",
+    "prompt": "",
+    "path": "data/library/characters/alex.png",
+    "thumb": "data/library/characters/alex.png",
+    "source": "本机 FLUX.2 Klein 4B AI 生成",
+    "generation": {
+      "seed": 93824,
+      "prompt": "Professional fashion model headshot portrait of one white European adult man, age 30, handsome, short brown hair, subtle stubble, relaxed expression. Front view, head and shoulders, looking into camera, wearing a plain white crew neck t-shirt, light warm gray studio background, soft daylight, photorealistic skin texture, natural proportions, premium editorial photography, centered face, no text, no logos."
+    }
+  },
+  {
+    "id": "character-maya",
+    "code": "MAYA",
+    "kind": "character",
+    "name": "Maya · 自信明朗",
+    "category": "女性 · 黑人",
+    "tags": "内置 AI 生成人物 女性 · 黑人",
+    "prompt": "",
+    "path": "data/library/characters/maya.png",
+    "thumb": "data/library/characters/maya.png",
+    "source": "本机 FLUX.2 Klein 4B AI 生成",
+    "generation": {
+      "seed": 93825,
+      "prompt": "Professional fashion model headshot portrait of one Black African adult woman, age 28, beautiful, dark brown skin, natural curly black hair, elegant confident expression. Front view, head and shoulders, looking into camera, wearing a plain white crew neck t-shirt, light warm gray studio background, soft daylight, photorealistic skin texture, natural proportions, premium editorial photography, centered face, no text, no logos."
+    }
+  },
+  {
+    "id": "character-noah",
+    "code": "NOAH",
+    "kind": "character",
+    "name": "Noah · 沉稳利落",
+    "category": "男性 · 黑人",
+    "tags": "内置 AI 生成人物 男性 · 黑人",
+    "prompt": "",
+    "path": "data/library/characters/noah.png",
+    "thumb": "data/library/characters/noah.png",
+    "source": "本机 FLUX.2 Klein 4B AI 生成",
+    "generation": {
+      "seed": 93826,
+      "prompt": "Professional fashion model headshot portrait of one Black African adult man, age 30, handsome, dark brown skin, short cropped black hair, clean shaven, relaxed confident expression. Front view, head and shoulders, looking into camera, wearing a plain white crew neck t-shirt, light warm gray studio background, soft daylight, photorealistic skin texture, natural proportions, premium editorial photography, centered face, no text, no logos."
+    }
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "pose": {
+    "repo": "https://github.com/wquguru/shisei",
+    "revision": "3f60df337c1569d04df2a2309615a1cf96d56501",
+    "poses": 280,
+    "images": 1158,
+    "license": "CC0-1.0 (images/data)"
+  },
+  "outfit": {
+    "repo": "https://github.com/paipiange/nvzhuang",
+    "revision": "f13741ebc09c73a63b92f626a115a1bb74ed779f",
+    "outfits": 1407,
+    "original": "https://ai-costume-gallery.pages.dev/",
+    "license": "Repository code MIT; source image terms retained separately. Local reference use; do not assume redistribution rights."
+  }
+}

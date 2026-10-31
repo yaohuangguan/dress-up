@@ -1,0 +1,74 @@
+[
+  {
+    "id": "background-studio",
+    "code": "STUDIO",
+    "kind": "background",
+    "name": "极简影棚",
+    "category": "室内",
+    "tags": "极简影棚 a minimalist professional fashion photography studio, warm white seamless curved backdrop, light gray floor, soft diffuse studio lighting, empty central foreground",
+    "prompt": "a minimalist professional fashion photography studio, warm white seamless curved backdrop, light gray floor, soft diffuse studio lighting, empty central foreground",
+    "path": "data/library/backgrounds/studio.png",
+    "thumb": "data/library/backgrounds/studio.png",
+    "source": "本机 FLUX.2 Klein 4B AI 生成"
+  },
+  {
+    "id": "background-cafe",
+    "code": "CAFE",
+    "kind": "background",
+    "name": "街角咖啡馆",
+    "category": "室内",
+    "tags": "街角咖啡馆 an elegant Parisian sidewalk cafe, warm wooden cafe facade, large windows, small bistro tables on the side, open central pavement for a fashion portrait, soft morning light",
+    "prompt": "an elegant Parisian sidewalk cafe, warm wooden cafe facade, large windows, small bistro tables on the side, open central pavement for a fashion portrait, soft morning light",
+    "path": "data/library/backgrounds/cafe.png",
+    "thumb": "data/library/backgrounds/cafe.png",
+    "source": "本机 FLUX.2 Klein 4B AI 生成"
+  },
+  {
+    "id": "background-city",
+    "code": "CITY",
+    "kind": "background",
+    "name": "都市街头",
+    "category": "户外",
+    "tags": "都市街头 a contemporary city street with modern limestone buildings and shop windows, quiet empty sidewalk, open foreground for a full body fashion photo, soft overcast daylight",
+    "prompt": "a contemporary city street with modern limestone buildings and shop windows, quiet empty sidewalk, open foreground for a full body fashion photo, soft overcast daylight",
+    "path": "data/library/backgrounds/city.png",
+    "thumb": "data/library/backgrounds/city.png",
+    "source": "本机 FLUX.2 Klein 4B AI 生成"
+  },
+  {
+    "id": "background-beach",
+    "code": "BEACH",
+    "kind": "background",
+    "name": "落日海岸",
+    "category": "户外",
+    "tags": "落日海岸 a beautiful quiet sandy beach, calm ocean, golden sunset light, distant coastline, open empty foreground sand for a full body fashion portrait, subtle warm pink sky",
+    "prompt": "a beautiful quiet sandy beach, calm ocean, golden sunset light, distant coastline, open empty foreground sand for a full body fashion portrait, subtle warm pink sky",
+    "path": "data/library/backgrounds/beach.png",
+    "thumb": "data/library/backgrounds/beach.png",
+    "source": "本机 FLUX.2 Klein 4B AI 生成"
+  },
+  {
+    "id": "background-park",
+    "code": "PARK",
+    "kind": "background",
+    "name": "林荫公园",
+    "category": "户外",
+    "tags": "林荫公园 a serene public park with a wide stone path, leafy trees framing both sides, soft late afternoon sunlight, open empty central foreground for a full body portrait",
+    "prompt": "a serene public park with a wide stone path, leafy trees framing both sides, soft late afternoon sunlight, open empty central foreground for a full body portrait",
+    "path": "data/library/backgrounds/park.png",
+    "thumb": "data/library/backgrounds/park.png",
+    "source": "本机 FLUX.2 Klein 4B AI 生成"
+  },
+  {
+    "id": "background-loft",
+    "code": "LOFT",
+    "kind": "background",
+    "name": "暖调室内",
+    "category": "室内",
+    "tags": "暖调室内 a refined contemporary loft apartment, large sunlit window, neutral plaster walls, warm oak floor, minimal sofa at the side, wide empty foreground, soft diffused natural light",
+    "prompt": "a refined contemporary loft apartment, large sunlit window, neutral plaster walls, warm oak floor, minimal sofa at the side, wide empty foreground, soft diffused natural light",
+    "path": "data/library/backgrounds/loft.png",
+    "thumb": "data/library/backgrounds/loft.png",
+    "source": "本机 FLUX.2 Klein 4B AI 生成"
+  }
+]
