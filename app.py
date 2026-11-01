@@ -148,7 +148,7 @@ async def status(request):
     except (aiohttp.ClientError,asyncio.TimeoutError,ValueError):
         error='ComfyUI 未连接，请使用启动脚本启动两个本地服务'
     counts={kind:sum(x['kind']==kind for x in app['items'].values()) for kind in KINDS}
-    return web.json_response({'connected':connected,'ready':connected and all(x['ready'] for x in models),'gpu':gpu,'models':models,'counts':counts,'pose_images':sum(len(x.get('views',{})) for x in app['items'].values()),'active_job':app['active'],'error':error,'engine':'FLUX.2 Klein 4B · 本地 CUDA'})
+    return web.json_response({'connected':connected,'ready':connected and all(x['ready'] for x in models),'gpu':gpu,'models':models,'counts':counts,'pose_images':sum(len(x.get('views',{})) for x in app['items'].values()),'active_job':app['active'],'active_kind':'video' if app['active'] in app.get('video_jobs',{}) else 'image','error':error,'engine':'FLUX.2 Klein 4B · 本地 CUDA'})
 
 async def catalog(request):
     params=request.query
@@ -339,7 +339,7 @@ async def workflow(request):
 
 async def static(request):
     name=request.match_info.get('name','index.html')
-    if name not in {'index.html','app.js','style.css','glass.css','manifest.webmanifest','sw.js','icon-192.png','icon-512.png'}:raise web.HTTPNotFound()
+    if name not in {'index.html','app.js','video.js','video.css','style.css','glass.css','manifest.webmanifest','sw.js','icon-192.png','icon-512.png'}:raise web.HTTPNotFound()
     response=web.FileResponse(ROOT/'web'/name)
     if name=='sw.js':response.headers['Cache-Control']='no-cache'
     return response
@@ -369,6 +369,10 @@ def create_app():
         if 'id' in job:app['jobs'][job['id']]=job
     app['active']=None
     app['tasks']=set()
+    from video_engine import register as register_video
+    register_video(app,ROOT,comfy_json,save_json,item_path,lambda:COMFY_URL)
+    from story_writer import register as register_writer
+    register_writer(app)
     app.cleanup_ctx.append(lifecycle)
     app.add_routes([web.get('/api/status',status),web.get('/api/catalog',catalog),web.get('/api/items/{id}',item),web.post('/api/uploads',upload),web.post('/api/generate',generate),web.get('/api/jobs/{id}',get_job),web.get('/api/history',history),web.get('/api/workflow/{id}',workflow),web.get('/media/{id}',media),web.get('/results/{id}.png',result),web.get('/',static),web.get('/{name}',static)])
     from mobile import register_mobile

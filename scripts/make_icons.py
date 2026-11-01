@@ -12,3 +12,4 @@ for size in [192,512]:
     draw.rounded_rectangle((int(83*scale),int(68*scale),int(429*scale),int(428*scale)),radius=int(70*scale),outline='#706c65',width=max(1,int(3*scale)))
     draw.line((int(195*scale),int(365*scale),int(317*scale),int(365*scale)),fill='#a49d93',width=max(1,int(4*scale)))
     image.save(directory/f'icon-{size}.png')
+    if size==512:image.save(directory/'app.ico',format='ICO',sizes=[(16,16),(32,32),(48,48),(64,64),(128,128),(256,256)])

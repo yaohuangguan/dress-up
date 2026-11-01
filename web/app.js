@@ -43,7 +43,7 @@ function renderSelection() {
   }).join('');
   $('recipeItems').innerHTML=Object.entries(labels).map(([kind,label])=>`<span class="recipe-chip"><span>${label}</span>${esc(state.selected[kind]?.name || '尚未选择')}</span>`).join('');
   const ready=['character','outfit','pose'].every(kind=>!!state.selected[kind]);
-  const busy=state.job && !['completed','failed','interrupted'].includes(state.job.status);
+  const busy=!!state.status?.active_job || (state.job && !['completed','failed','interrupted'].includes(state.job.status));
   $('generateButton').disabled=!ready || !state.status?.ready || !!busy;
   $('generateLabel').textContent=busy?'正在本地生成…':'生成这套搭配';
   $('generateHint').textContent=busy?'首次模型加载较慢，页面会持续更新进度':!state.status?.ready?'本地引擎准备中 · 点击左下角查看状态':!ready?'选择人物、衣装与姿势，即可开始':'三张参考图，一次新的尝试 · 本地算力';
@@ -115,7 +115,9 @@ async function refreshStatus() {
     document.body.classList.toggle('ready',state.status.ready);
     $('engineLabel').textContent=state.status.ready?'本地引擎已就绪':state.status.connected?'模型下载中':'ComfyUI 未连接';
     $('footerStats').textContent=`${state.status.counts.outfit.toLocaleString()} 套衣装 / ${state.status.counts.pose} 组姿势 / ${state.status.pose_images.toLocaleString()} 张参考`;
-    if(state.status.active_job && !state.job) {
+    if(state.status.active_job && state.status.active_kind==='video') {
+      if(window.resumeVideo)window.resumeVideo(state.status.active_job);
+    } else if(state.status.active_job && state.status.active_job!=='scriptwriter' && !state.job) {
       state.job=await api('/api/jobs/'+state.status.active_job);
       updateJob(state.job);schedulePoll();
     }
@@ -178,6 +180,7 @@ async function uploadFile(file) {
 }
 
 async function showHistory() {
+  if($('videoView'))$('videoView').hidden=true;
   state.view='history';$('studioView').hidden=true;$('historyView').hidden=false;
   document.body.classList.remove('library-mode');
   $('pageTitle').textContent='生成记录';$('heading').textContent='生成记录 / 03';$('subheading').textContent='回看你的搭配灵感，下载成图，或沿用组合继续探索。';
@@ -190,6 +193,7 @@ async function showHistory() {
 }
 
 function showStudio(library=false) {
+  if($('videoView'))$('videoView').hidden=true;
   state.view=library?'library':'studio';$('studioView').hidden=false;$('historyView').hidden=true;
   document.body.classList.toggle('library-mode',library);
   $('pageTitle').textContent=library?'素材图书馆':'搭配工作台';

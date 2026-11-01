@@ -1,0 +1,52 @@
+{
+  "CheckpointLoaderSimple": [
+    "ckpt_name"
+  ],
+  "CLIPLoader": [
+    "clip_name",
+    "type"
+  ],
+  "LTXVImgToVideo": [
+    "positive",
+    "negative",
+    "vae",
+    "image",
+    "width",
+    "height",
+    "length",
+    "batch_size",
+    "strength"
+  ],
+  "LTXVConditioning": [
+    "positive",
+    "negative",
+    "frame_rate"
+  ],
+  "ManualSigmas": [
+    "sigmas"
+  ],
+  "SamplerCustomAdvanced": [
+    "noise",
+    "guider",
+    "sampler",
+    "sigmas",
+    "latent_image"
+  ],
+  "CreateVideo": [
+    "images",
+    "fps"
+  ],
+  "SaveVideo": [
+    "video",
+    "filename_prefix",
+    "format"
+  ],
+  "VAEDecodeTiled": [
+    "samples",
+    "vae",
+    "tile_size",
+    "overlap",
+    "temporal_size",
+    "temporal_overlap"
+  ]
+}

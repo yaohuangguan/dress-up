@@ -39,6 +39,8 @@ def main():
     LOGS.mkdir(exist_ok=True)
     state=json.loads(STATE.read_text()) if STATE.exists() else {}
     if args.stop:
+        if (ROOT/'data/remote/state.json').exists():
+            subprocess.run([sys.executable,str(ROOT/'remote_access.py'),'--stop'],cwd=ROOT,check=True,timeout=20,creationflags=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0)
         for name,pid in state.items():
             process=owned(pid)
             if process:
@@ -67,6 +69,11 @@ def main():
         output=(LOGS/(name+'.log')).open('a',encoding='utf8')
         environment=os.environ.copy()
         environment['PYTHONIOENCODING']='utf-8'
+        temporary=ROOT/'work/tmp'
+        temporary.mkdir(parents=True,exist_ok=True)
+        for key in ['TEMP','TMP','TMPDIR']:environment[key]=str(temporary)
+        environment['HF_HOME']=str(ROOT/'work/cache/huggingface')
+        environment['TORCH_HOME']=str(ROOT/'work/cache/torch')
         process=subprocess.Popen([sys.executable,'-u',*arguments],cwd=ROOT,stdout=output,stderr=subprocess.STDOUT,env=environment,creationflags=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0)
         output.close()
         state[name]=process.pid

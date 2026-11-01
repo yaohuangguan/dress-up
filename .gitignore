@@ -9,6 +9,8 @@ data/uploads/
 data/uploads.json
 data/jobs/
 data/results/
+data/videos/
+data/video_jobs/
 logs/
 __pycache__/
 *.pyc
@@ -17,3 +19,5 @@ logs-test-*.txt
 work/
 .env
 .env.*
+data/remote/
+远程访问.txt

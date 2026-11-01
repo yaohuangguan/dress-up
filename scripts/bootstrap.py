@@ -1,5 +1,6 @@
 """Recreate this verified Windows installation without global package changes."""
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -17,6 +18,10 @@ def run(*arguments):
     subprocess.run(list(map(str,arguments)),cwd=ROOT,check=True)
 
 def main():
+    temporary=ROOT/'work/tmp'
+    temporary.mkdir(parents=True,exist_ok=True)
+    for key in ['TEMP','TMP','TMPDIR']:os.environ[key]=str(temporary)
+    os.environ['PIP_CACHE_DIR']=str(ROOT/'work/cache/pip')
     if sys.version_info[:2]!=(3,11):raise SystemExit('Use Python 3.11 (64-bit) for the verified Windows setup.')
     python=ROOT/'.venv/Scripts/python.exe'
     if not python.exists():run(sys.executable,'-m','venv',ROOT/'.venv')
@@ -31,7 +36,10 @@ def main():
             if current!=revision:raise SystemExit(f'{directory}: existing checkout differs from verified version; left unchanged.')
     run(python,'scripts/import_libraries.py')
     run(python,'scripts/download_models.py')
+    run(python,'scripts/download_video_models.py')
+    run(python,'scripts/download_creative_models.py')
     run(python,'scripts/make_icons.py')
+    run('powershell','-NoProfile','-ExecutionPolicy','Bypass','-File',ROOT/'scripts/Install-Shortcuts.ps1')
     print('Installed. Double-click Start-Studio.cmd to open the studio.',flush=True)
 
 if __name__=='__main__':main()

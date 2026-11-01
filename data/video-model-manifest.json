@@ -1,0 +1,16 @@
+[
+  {
+    "file": "runtime\\ComfyUI\\models\\checkpoints\\ltxv-2b-0.9.8-distilled-fp8.safetensors",
+    "size": 4461695684,
+    "sha256": "d6d8fa8ed3a98346787c2503ac80fb5d7cebcf80e356b79a2ba361fbadf97e15",
+    "repo": "Lightricks/LTX-Video",
+    "revision": "8984fa25007f376c1a299016d0957a37a2f797bb"
+  },
+  {
+    "file": "runtime\\ComfyUI\\models\\text_encoders\\t5xxl_fp8_e4m3fn.safetensors",
+    "size": 4893934904,
+    "sha256": "7d330da4816157540d6bb7838bf63a0f02f573fc48ca4d8de34bb0cbfd514f09",
+    "repo": "comfyanonymous/flux_text_encoders",
+    "revision": "6af2a98e3f615bdfa612fbd85da93d1ed5f69ef5"
+  }
+]
