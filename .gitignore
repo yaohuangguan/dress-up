@@ -21,3 +21,6 @@ work/
 .env.*
 data/remote/
 远程访问.txt
+
+data/portraits.json
+data/hairstyles.json

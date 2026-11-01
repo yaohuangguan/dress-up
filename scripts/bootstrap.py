@@ -1,4 +1,5 @@
 """Recreate this verified Windows installation without global package changes."""
+import argparse
 import json
 import os
 import subprocess
@@ -18,6 +19,9 @@ def run(*arguments):
     subprocess.run(list(map(str,arguments)),cwd=ROOT,check=True)
 
 def main():
+    parser=argparse.ArgumentParser(description='Install the local image studio; video weights are opt-in.')
+    parser.add_argument('--with-video',action='store_true',help='Also install local video, writer and voice models (~12.3 GB extra)')
+    args=parser.parse_args()
     temporary=ROOT/'work/tmp'
     temporary.mkdir(parents=True,exist_ok=True)
     for key in ['TEMP','TMP','TMPDIR']:os.environ[key]=str(temporary)
@@ -35,9 +39,11 @@ def main():
             current=subprocess.check_output(['git','-C',str(directory),'rev-parse','HEAD'],text=True).strip()
             if current!=revision:raise SystemExit(f'{directory}: existing checkout differs from verified version; left unchanged.')
     run(python,'scripts/import_libraries.py')
+    run(python,'scripts/import_portraits.py')
     run(python,'scripts/download_models.py')
-    run(python,'scripts/download_video_models.py')
-    run(python,'scripts/download_creative_models.py')
+    if args.with_video:
+        run(python,'scripts/download_video_models.py')
+        run(python,'scripts/download_creative_models.py')
     run(python,'scripts/make_icons.py')
     run('powershell','-NoProfile','-ExecutionPolicy','Bypass','-File',ROOT/'scripts/Install-Shortcuts.ps1')
     print('Installed. Double-click Start-Studio.cmd to open the studio.',flush=True)

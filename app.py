@@ -15,12 +15,13 @@ import aiohttp
 from aiohttp import web
 from PIL import Image, ImageOps, UnidentifiedImageError
 
-from workflow import build_workflow
+from workflow import IMAGE_PROFILES, add_hairstyle_pass, build_workflow
 
 ROOT = Path(__file__).resolve().parent
 COMFY_URL = 'http://127.0.0.1:8188'
-KINDS = {'character', 'outfit', 'pose', 'background'}
-SIZES = {'portrait': (640,896), 'square': (768,768), 'large': (768,1024)}
+KINDS = {'character', 'outfit', 'pose', 'background', 'hairstyle'}
+SIZES = IMAGE_PROFILES['fast']['sizes']
+COMMON_MODELS = [('text_encoders','qwen_3_4b.safetensors',8_000_000_000),('vae','flux2-vae.safetensors',330_000_000)]
 MAX_UPLOAD = 20*1024*1024
 Image.MAX_IMAGE_PIXELS = 25_000_000
 log = logging.getLogger('local-look')
@@ -66,6 +67,8 @@ def validate_generation(body,items):
         raise ValueError('这个姿势没有所选视角，请换一个视角')
     size=body.get('size','portrait')
     if size not in SIZES:raise ValueError('无效画幅')
+    quality=body.get('quality','fast')
+    if not isinstance(quality,str) or quality not in IMAGE_PROFILES:raise ValueError('无效画质档位')
     prompt=body.get('prompt','')
     if not isinstance(prompt,str) or len(prompt)>1500:raise ValueError('补充描述最多 1500 字')
     seed=body.get('seed')
@@ -77,26 +80,52 @@ def validate_generation(body,items):
         selected.append(items[background])
     description=body.get('background_description','')
     if not isinstance(description,str) or len(description)>600:raise ValueError('背景描述最多 600 字')
-    return selected,angle,size,prompt,seed,description
+    hairstyle=body.get('hairstyle')
+    if hairstyle is not None:
+        if not isinstance(hairstyle,str) or hairstyle not in items or items[hairstyle]['kind']!='hairstyle':raise ValueError('无效发型素材')
+        selected.append(items[hairstyle])
+    hair_description=body.get('hairstyle_description','')
+    if not isinstance(hair_description,str) or len(hair_description)>400:raise ValueError('发型描述最多 400 字')
+    return selected,angle,size,prompt,seed,description,quality,hair_description
 
-def compose_prompt(selected,extra,background_description=''):
+def image_references(selected):
+    # Named styles carry explicit hair descriptions, so their preview faces do not
+    # compete with the person's identity. Uploaded hair images remain references.
+    return [item for item in selected if not (item['kind']=='hairstyle' and item.get('reference_mode')=='description')]
+
+
+def compose_prompt(selected,extra,background_description='',hairstyle_description=''):
+    assets={item['kind']:item for item in selected}
+    references=image_references(selected)
     background='Use a clean professional studio background with soft lighting. '
-    if len(selected)>3:
-        background='Use the location in image 4 as the background, preserve its environment and perspective, and place the person naturally into this scene with matching lighting and realistic contact shadows. Image 4 is a location reference only. '+selected[3].get('prompt','')+'. '
+    location=assets.get('background')
+    if location:
+        index=references.index(location)+1
+        background=f'Use the location in image {index} as the background, preserve its environment and perspective, and place the person naturally into this scene with matching lighting and realistic contact shadows. Image {index} is a location reference only. '+location.get('prompt','')+'. '
     if background_description:
-        if len(selected)==3:background='Set the background location to: '+background_description+'. Match the lighting and contact shadows to this scene. '
+        if not location:background='Set the background location to: '+background_description+'. Match the lighting and contact shadows to this scene. '
         else:background+='Background instructions: '+background_description+'. '
+    hair=assets.get('hairstyle')
+    hair_prompt='Preserve the hairstyle and hair color of image 1. '
+    if hair or hairstyle_description:
+        hair_prompt='Change only the hairstyle while preserving the exact facial structure, eyes, nose, mouth, age and identity of image 1. '
+        if hair:
+            if hair.get('reference_mode')=='description':hair_prompt+='Selected hairstyle: '+hair.get('prompt','')+'. '
+            else:hair_prompt+=f'Use image {references.index(hair)+1} for hair shape, length, parting and texture only; ignore that reference person\'s face, skin, clothing and background. '
+        if hairstyle_description:hair_prompt+='Hair instructions: '+hairstyle_description+'. '
     return (
-        'Create a single realistic full-body fashion photograph of the adult person from image 1. '
-        'Preserve the facial identity, hairstyle, hair color, skin tone and gender of image 1. '
-        'Dress this person in the exact outfit shown in image 2, preserving its colors, fabrics, cut, shoes and accessories. '
-        'Match the body pose, hands, limbs and camera angle of the mannequin in image 3. '
-        'Image 3 is only a pose reference; render a fully clothed realistic person, not a mannequin or drawing. '
-        'Show one person only, head to shoes, with natural proportions and coherent photographic lighting. '
+        'Create a single unretouched camera photograph of the adult person from image 1, framed full-body. '
+        'Image 1 supplies the facial identity, age and gender. Preserve the original facial structure and eye shape. '
+        + hair_prompt +
+        'Image 1 is the sole reference for natural base skin tone across the face, neck, torso, arms, hands and legs, under consistent neutral white balance. '
+        'Image 2 supplies only the garments: preserve colors, fabrics, construction, cut, shoes and accessories. Fit them to the person from image 1, ignoring the display mannequin and its skin color or proportions. '
+        'Render hosiery as translucent fabric over the same skin tone, with clear realistic fabric boundaries. '
+        'Image 3 supplies only pose action, joint arrangement, hand placement and camera direction. Reconstruct anatomically plausible adult proportions, connected hips, knees and ankles, and natural limb lengths. '
+        'Show one adult person wearing the selected garments, head to shoes. '
+        'Photographic rendering: visible fine skin pores and subtle natural texture, slight color variations, fine flyaway hairs, detailed fabric fibers, soft directional light, physically plausible shadows, restrained contrast and neutral color grading. '
+        'Avoid beauty-filter smoothing, porcelain skin, artificial shine and CGI rendering. '
         + background
-        +
-        f'Outfit details: {selected[1].get("prompt","")}. '
-        f'Pose details: {selected[2].get("prompt","")}. '
+        + f'Outfit details: {selected[1].get("prompt","")}. Pose details: {selected[2].get("prompt","")}. '
         + extra
     )
 
@@ -134,7 +163,7 @@ async def comfy_json(app,method,path,**kwargs):
 async def status(request):
     app=request.app
     models=[]
-    for folder,name,minimum in [('diffusion_models','flux-2-klein-4b-fp8.safetensors',4_000_000_000),('text_encoders','qwen_3_4b.safetensors',8_000_000_000),('vae','flux2-vae.safetensors',330_000_000)]:
+    for folder,name,minimum in [('diffusion_models',p['model'],4_000_000_000) for p in IMAGE_PROFILES.values()]+COMMON_MODELS:
         file=ROOT/'runtime/ComfyUI/models'/folder/name
         part=file.with_suffix('.partial')
         models.append({'name':name,'ready':file.exists() and file.stat().st_size>=minimum,'bytes':file.stat().st_size if file.exists() else (part.stat().st_size if part.exists() else 0)})
@@ -147,8 +176,10 @@ async def status(request):
         connected=True
     except (aiohttp.ClientError,asyncio.TimeoutError,ValueError):
         error='ComfyUI 未连接，请使用启动脚本启动两个本地服务'
+    installed={x['name']:x['ready'] for x in models}
+    profiles={key:{'label':p['label'],'model':p['model'],'steps':p['steps'],'sizes':p['sizes'],'ready':connected and installed[p['model']] and all(installed[m[1]] for m in COMMON_MODELS)} for key,p in IMAGE_PROFILES.items()}
     counts={kind:sum(x['kind']==kind for x in app['items'].values()) for kind in KINDS}
-    return web.json_response({'connected':connected,'ready':connected and all(x['ready'] for x in models),'gpu':gpu,'models':models,'counts':counts,'pose_images':sum(len(x.get('views',{})) for x in app['items'].values()),'active_job':app['active'],'active_kind':'video' if app['active'] in app.get('video_jobs',{}) else 'image','error':error,'engine':'FLUX.2 Klein 4B · 本地 CUDA'})
+    return web.json_response({'connected':connected,'ready':any(x['ready'] for x in profiles.values()),'profiles':profiles,'gpu':gpu,'models':models,'counts':counts,'pose_images':sum(len(x.get('views',{})) for x in app['items'].values()),'active_job':app['active'],'active_kind':'video' if app['active'] in app.get('video_jobs',{}) else 'image','error':error,'engine':'FLUX.2 Klein Base / Klein 4B · 本地 CUDA'})
 
 async def catalog(request):
     params=request.query
@@ -226,10 +257,11 @@ def persist_job(app,job):
 async def run_job(app,job,selected):
     prompt_id=None
     try:
-        job.update(status='preparing',message='正在准备三张参考图',progress=0)
+        job.update(status='preparing',message='正在准备所选参考图',progress=0)
         persist_job(app,job)
         names=[]
-        for kind,asset in zip(['character','outfit','pose','background'],selected):
+        for asset in image_references(selected):
+            kind=asset['kind']
             source=item_path(asset,job['angle'])
             with Image.open(source) as image:
                 image=ImageOps.exif_transpose(image).convert('RGB')
@@ -242,10 +274,14 @@ async def run_job(app,job,selected):
             form.add_field('subfolder','LocalLookStudio')
             result=await comfy_json(app,'POST','/upload/image',data=form)
             names.append((result.get('subfolder','')+'/'+result['name']).lstrip('/'))
-        width,height=SIZES[job['size']]
-        graph=build_workflow(names,job['full_prompt'],job['seed'],width,height)
+        quality=job.get('quality','fast')
+        width,height=IMAGE_PROFILES[quality]['sizes'][job['size']]
+        graph=build_workflow(names[:4],job['full_prompt'],job['seed'],width,height,quality=quality)
+        if job.get('stages',1)==2:
+            graph=add_hairstyle_pass(graph,names[-1],job['hairstyle_prompt'],job['seed'],width,height,quality)
         save_json(ROOT/'data/jobs'/(job['id']+'.workflow.json'),graph)
         client_id=uuid.uuid4().hex
+        stage=1
         async with app['client'].ws_connect(COMFY_URL+'/ws?clientId='+client_id,timeout=aiohttp.ClientWSTimeout(ws_receive=1800)) as ws:
             queued=await comfy_json(app,'POST','/prompt',json={'prompt':graph,'client_id':client_id})
             if queued.get('node_errors'):raise ValueError('工作流校验失败：'+str(queued['node_errors'])[:600])
@@ -261,10 +297,11 @@ async def run_job(app,job,selected):
                 if event_type=='execution_error':raise ValueError(data.get('exception_message','ComfyUI 生图失败')[:600])
                 if event_type=='execution_interrupted':raise ValueError('任务已取消')
                 if event_type=='progress':
-                    job.update(status='running',progress=round(100*data['value']/max(1,data['max'])),message=f'正在采样 {data["value"]} / {data["max"]}')
+                    job.update(status='running',progress=round(100*((stage-1)+data['value']/max(1,data['max']))/job.get('stages',1)),message=f'正在采样 {data["value"]} / {data["max"]}'+(f' · 第 {stage}/2 轮' if job.get('stages',1)==2 else ''))
                 elif event_type=='executing':
                     node=data.get('node')
                     if node is None:break
+                    stage=2 if str(node).startswith('hair-') else 1
                     node_type=graph.get(str(node),{}).get('class_type','')
                     message='正在本地生成'
                     if node_type=='CLIPTextEncode':message='正在 CPU 编码描述，首次加载较慢'
@@ -292,7 +329,7 @@ async def run_job(app,job,selected):
     except Exception as exc:
         log.exception('generation failed %s',job['id'])
         message=str(exc) or type(exc).__name__
-        if 'out of memory' in message.lower():message='显存不足：请关闭其他占用显卡的软件，并使用 640×896 画幅重试'
+        if 'out of memory' in message.lower():message='显存不足：请关闭其他占用显卡的软件，或切换快速预览并缩小画幅重试'
         job.update(status='failed',message=message[:600])
     finally:
         persist_job(app,job)
@@ -300,15 +337,20 @@ async def run_job(app,job,selected):
 
 async def generate(request):
     app=request.app
-    selected,angle,size,extra,seed,background_description=validate_generation(await request.json(),app['items'])
+    selected,angle,size,extra,seed,background_description,quality,hairstyle_description=validate_generation(await request.json(),app['items'])
     if app['active']:return web.json_response({'error':'已有任务运行中，请等待完成'},status=409)
-    if not all(x.is_file() for x in [ROOT/'runtime/ComfyUI/models/diffusion_models/flux-2-klein-4b-fp8.safetensors',ROOT/'runtime/ComfyUI/models/text_encoders/qwen_3_4b.safetensors',ROOT/'runtime/ComfyUI/models/vae/flux2-vae.safetensors']):
+    profile=IMAGE_PROFILES[quality]
+    required=[('diffusion_models',profile['model'])]+[(folder,name) for folder,name,_ in COMMON_MODELS]
+    if not all((ROOT/'runtime/ComfyUI/models'/folder/name).is_file() for folder,name in required):
         return web.json_response({'error':'模型尚未下载完成，请查看引擎状态'},status=503)
     try:await comfy_json(app,'GET','/system_stats')
     except (aiohttp.ClientError,asyncio.TimeoutError):return web.json_response({'error':'ComfyUI 未启动，请运行启动脚本'},status=503)
     # Claim the single GPU slot after the network await; concurrent requests must recheck.
     if app['active']:return web.json_response({'error':'已有任务运行中'},status=409)
-    job={'id':uuid.uuid4().hex,'created':time.time(),'status':'queued','progress':0,'message':'准备生成','seed':seed,'angle':angle,'size':size,'prompt':extra,'background_description':background_description,'full_prompt':compose_prompt(selected,extra,background_description),'selection':{x['kind']:public_item(x,angle) for x in selected}}
+    two_pass=len(image_references(selected))>4
+    body_selection=[x for x in selected if x['kind']!='hairstyle'] if two_pass else selected
+    hair_edit='Change only the hairstyle of the adult person in image 1 to match the hair in image 2. Preserve the exact facial identity, skin tone, expression, pose, garments, shoes, background, lighting, framing and photographic texture of image 1. Use image 2 for hair shape and texture only. '+hairstyle_description
+    job={'id':uuid.uuid4().hex,'created':time.time(),'status':'queued','progress':0,'message':'准备生成','seed':seed,'angle':angle,'size':size,'quality':quality,'width':profile['sizes'][size][0],'height':profile['sizes'][size][1],'model':profile['model'],'steps':profile['steps'],'prompt':extra,'background_description':background_description,'hairstyle_description':hairstyle_description,'stages':2 if two_pass else 1,'hairstyle_prompt':hair_edit if two_pass else '', 'full_prompt':compose_prompt(body_selection,extra,background_description,'' if two_pass else hairstyle_description),'selection':{x['kind']:public_item(x,angle) for x in selected}}
     app['active']=job['id']
     persist_job(app,job)
     task=asyncio.create_task(run_job(app,job,selected))
@@ -357,7 +399,7 @@ def create_app():
     base=read_json(ROOT/'data/catalog.json',[])
     characters=read_json(ROOT/'data/characters.json',[])
     if characters:base=[x for x in base if x['kind']!='character']
-    app['items']={x['id']:x for x in base+characters+read_json(ROOT/'data/backgrounds.json',[])+uploads}
+    app['items']={x['id']:x for x in base+characters+read_json(ROOT/'data/portraits.json',[])+read_json(ROOT/'data/hairstyles.json',[])+read_json(ROOT/'data/backgrounds.json',[])+uploads}
     app['uploads']=uploads
     app['jobs']={}
     for file in (ROOT/'data/jobs').glob('*.json'):

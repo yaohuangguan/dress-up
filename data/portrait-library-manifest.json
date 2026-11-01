@@ -1,0 +1,13 @@
+{
+  "source": "https://ai-portrait-gallery.pages.dev/",
+  "author": "あぎ (@agi_aibusi)",
+  "license": "CC0-1.0; original site requests no republication of image files",
+  "preview_mirror": "https://raw.githubusercontent.com/HRuiCcc/RuiC-PoseAtlas/5a6202c65ca9a44bb283d9a45a562aef88d17527/portrait/thumbs/",
+  "metadata_repo": "https://github.com/HRuiCcc/RuiC-PoseAtlas",
+  "revision": "5a6202c65ca9a44bb283d9a45a562aef88d17527",
+  "metadata_sha256": "80d318576c376c1018a18e935e906505254d1ccef178323196b038cd84342115",
+  "portraits": 1499,
+  "hairstyles": 50,
+  "preview_bytes": 27953130,
+  "originals_downloaded": false
+}

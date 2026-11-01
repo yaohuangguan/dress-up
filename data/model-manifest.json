@@ -1,5 +1,12 @@
 [
   {
+    "file": "runtime\\ComfyUI\\models\\diffusion_models\\flux-2-klein-base-4b-fp8.safetensors",
+    "size": 4089498488,
+    "sha256": "44bab3a86fe98b85d21dd2a4729ebdc3ae51fb8a39f76e457e18c724219e6840",
+    "revision": "103db268c10d4d3921101b46057671f9ac460da6",
+    "repo": "black-forest-labs/FLUX.2-klein-base-4b-fp8"
+  },
+  {
     "file": "runtime\\ComfyUI\\models\\diffusion_models\\flux-2-klein-4b-fp8.safetensors",
     "size": 4070624520,
     "sha256": "97ed34fe0567e436200f2faee3939b88f2b5d99f8af2a4dc16532c4245c0ccb6",
