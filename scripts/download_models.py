@@ -7,7 +7,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MODELS = [
-    ('black-forest-labs/FLUX.2-klein-base-4b-fp8', 'flux-2-klein-base-4b-fp8.safetensors', 'diffusion_models'),
     ('black-forest-labs/FLUX.2-klein-4b-fp8', 'flux-2-klein-4b-fp8.safetensors', 'diffusion_models'),
     ('Comfy-Org/Flux-2-Klein-4B', 'split_files/text_encoders/qwen_3_4b.safetensors', 'text_encoders'),
     ('Comfy-Org/Flux-2-Klein-4B', 'split_files/vae/flux2-vae.safetensors', 'vae'),
